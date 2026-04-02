@@ -213,7 +213,7 @@ export default function App() {
   };
 
   const spawnLayer = (width: number, height: number) => {
-    if (layersRef.current.length >= 3) return;
+    if (layersRef.current.length >= 10) return;
 
     const isMainComp = Math.random() < 0.12;
     const layerType = LAYER_TYPES[Math.floor(Math.random() * LAYER_TYPES.length)];
@@ -228,9 +228,9 @@ export default function App() {
     const x = Math.random() * workingWidth + minX;
     const y = height + 50;
     
-    // Aim towards the center top, but stay below the nav
-    const targetX = width / 2 + (Math.random() - 0.5) * 60; // Less horizontal spread
-    const vx = (targetX - x) / (150 + Math.random() * 50); // Much slower horizontal
+    // Aim towards the top, with more horizontal spread to fill the screen
+    const targetX = width / 2 + (Math.random() - 0.5) * (workingWidth * 0.8); 
+    const vx = (targetX - x) / (100 + Math.random() * 50); 
     
     // Calculate vy to peak below the top nav
     // peakY = y - (vy^2 / 2*GRAVITY)
@@ -470,13 +470,13 @@ export default function App() {
     if (gameState === 'playing') {
       // Gradual difficulty increase based on score
       const difficulty = Math.min(1, score / 150); // Maxes out at 150 score
-      const currentSpawnInterval = SPAWN_INTERVAL - (difficulty * 1000); // Interval drops from 2.5s to 1.5s
-      const maxShapesOnScreen = score > 50 ? (score > 100 ? 5 : 4) : 3; // Max shapes increase from 3 to 5
+      const currentSpawnInterval = Math.max(800, SPAWN_INTERVAL - (difficulty * 1700)); // Interval drops from 2.5s to 0.8s
+      const maxShapesOnScreen = score > 50 ? (score > 100 ? 12 : 10) : 8; // Max shapes increase from 8 to 12
       
       const timeSinceLastSpawn = now - lastSpawnTime.current;
       if (timeSinceLastSpawn > currentSpawnInterval && layersRef.current.length < maxShapesOnScreen) {
-        const maxWaveSize = score > 30 ? (score > 80 ? 4 : 3) : 2;
-        const count = Math.floor(Math.random() * maxWaveSize) + 1; 
+        const maxWaveSize = score > 30 ? (score > 80 ? 8 : 6) : 5;
+        const count = Math.floor(Math.random() * maxWaveSize) + 2; // Minimum 2 shapes per wave
         
         for (let i = 0; i < count; i++) {
           if (layersRef.current.length + i < maxShapesOnScreen) {
